@@ -3,6 +3,7 @@ export * from '@interfaces/helpers/aws.interface';
 export * from '@interfaces/helpers/db.interface';
 export * from '@interfaces/users/user.interface';
 export * from '@interfaces/helpers/misc.interface';
+export * from '@interfaces/helpers/route.interface';
 export * from '@middlewares/error.middleware';
 export * from '@middlewares/validation.middleware';
 export * from '@services/aws/cloudwatch.service';
