@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { DB_URI } from '@configs/env.config';
+import { MONGO_URI } from '@configs/env.config';
 
 /**
  * @description method responsible for establishing mongoose connection
@@ -7,7 +7,7 @@ import { DB_URI } from '@configs/env.config';
  */
 export const establishMongooseConnection = async (): Promise<boolean> => {
   if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(DB_URI, {
+    await mongoose.connect(MONGO_URI, {
       connectTimeoutMS: 5000,
       serverSelectionTimeoutMS: 5000,
     });
