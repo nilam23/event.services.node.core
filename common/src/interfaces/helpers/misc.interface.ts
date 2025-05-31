@@ -1,0 +1,47 @@
+import { APIGatewayEvent } from 'aws-lambda';
+
+export interface IFiletypeWithMimetype {
+  CSV: string;
+  EXCEL: string;
+  PDF: string;
+  PYTHON_NOTEBOOK: string;
+  ZIP: string;
+  PYTHON: string;
+  IMAGE: string;
+  PPT: string;
+  PPTX: string;
+  VIDEO_MP4: string;
+}
+
+export interface IStatusCode {
+  OK: number;
+  CREATED: number;
+  BAD_REQUEST: number;
+  UNAUTHORIZED: number;
+  FORBIDDEN: number;
+  NOT_FOUND: number;
+  CONFLICT: number;
+  INTERNAL_SERVER_ERROR: number;
+}
+
+export interface IAxiosAPIInvocationResponse {
+  statusCode: number;
+  data: any;
+}
+
+export interface ICipherPayload {
+  IV: string;
+  encryptedData: string;
+  authTag: string;
+}
+
+export interface IJwtPayload {
+  userId: string;
+  email: string;
+  role: string;
+  tenantId?: string;
+}
+
+export interface IAPIGatewayEventWithUser extends APIGatewayEvent {
+  currentUser: IJwtPayload;
+}
