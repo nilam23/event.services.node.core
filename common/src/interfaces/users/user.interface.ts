@@ -1,14 +1,12 @@
-import { ObjectId } from 'mongodb';
-
 export interface IUser {
-  _id?: ObjectId;
+  id: number;
   name: string;
   email: string;
-  phone?: number;
-  password?: string;
+  phone?: number | null;
+  password?: string | null;
   role?: 'admin' | 'user';
-  otpEnabled?: boolean;
-  lastLoggedInAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+  otp_enabled?: boolean;
+  last_logged_in_at?: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
