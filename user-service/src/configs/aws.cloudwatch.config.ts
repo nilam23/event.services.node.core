@@ -1,5 +1,5 @@
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
-import { AWS_CW_ACCESS_KEY, AWS_CW_REGION, AWS_CW_SECRET_KEY } from './env.config';
+import { AWS_CW_ACCESS_KEY, AWS_CW_REGION, AWS_CW_SECRET_KEY } from '@configs/env.config';
 import { AWSCloudWatch } from '@bts-ubiquitous/events';
 
 const cloudwatch: CloudWatchLogsClient = new CloudWatchLogsClient({

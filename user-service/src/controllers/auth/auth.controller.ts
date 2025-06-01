@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { bcryptHelpers, HttpStatusCodes, IUser, jwtHelpers, pgErrorCodes } from '@bts-ubiquitous/events';
-import { pool } from '@configs/postgresql.config';
-import { QueryResult } from 'pg';
+import { pgService } from '@configs/postgres.config';
 
 export class AuthController {
   /**
@@ -16,18 +15,18 @@ export class AuthController {
 
       const hashedPassword: string = await bcryptHelpers.hash(password);
 
-      const pgInsertResultL: PromiseSettledResult<QueryResult<any>>[] = await Promise.allSettled([
-        pool.query('INSERT INTO users (name, email, phone, password) VALUES ($1, $2, $3, $4) RETURNING *', [name, email, phone, hashedPassword]),
+      const pgInsertResult: PromiseSettledResult<IUser>[] = await Promise.allSettled([
+        pgService.create<IUser>('users', { name, email, phone, password: hashedPassword }),
       ]);
 
-      if (pgInsertResultL[0].status === 'rejected') {
-        if (pgInsertResultL[0].reason?.code === pgErrorCodes.UNIQUE_VIOLATION)
+      if (pgInsertResult[0].status === 'rejected') {
+        if (pgInsertResult[0].reason?.code === pgErrorCodes.UNIQUE_VIOLATION)
           return res.status(HttpStatusCodes.CONFLICT).json({ message: 'user already exists' });
-        else if (pgInsertResultL[0].reason?.code === pgErrorCodes.NOT_NULL_VIOLATION)
+        else if (pgInsertResult[0].reason?.code === pgErrorCodes.NOT_NULL_VIOLATION)
           return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: 'some fields are missing' });
-        else return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: pgInsertResultL[0].reason?.message || 'something went wrong' });
+        else return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: pgInsertResult[0].reason?.message || 'something went wrong' });
       } else {
-        const user: IUser = pgInsertResultL[0].value.rows[0];
+        const user: IUser = pgInsertResult[0].value;
         const token: string = jwtHelpers.createToken({ userId: user.id, email: user.email, role: user.role });
 
         return res.status(HttpStatusCodes.CREATED).json({ message: 'success', data: { token } });
@@ -47,27 +46,19 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      const pgSelectResultL: PromiseSettledResult<QueryResult<any>>[] = await Promise.allSettled([
-        pool.query('SELECT id, email, password, role FROM users WHERE email = $1', [email]),
-      ]);
+      const user: IUser = await pgService.findOne<IUser>('users', { email });
 
-      if (pgSelectResultL[0].status === 'rejected') {
-        return res.status(HttpStatusCodes.BAD_REQUEST).json({ message: pgSelectResultL[0].reason?.message || 'something went wrong' });
-      } else {
-        const user: IUser = pgSelectResultL[0].value.rows[0];
+      if (!user) return res.status(HttpStatusCodes.NOT_FOUND).json({ message: 'user not found' });
 
-        if (!user) return res.status(HttpStatusCodes.NOT_FOUND).json({ message: 'user not found' });
+      const isValidPassword: boolean = await bcryptHelpers.compare(password, user.password);
 
-        const isPasswordValid: boolean = await bcryptHelpers.compare(password, user.password);
+      if (!isValidPassword) return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: 'incorrect password' });
 
-        if (!isPasswordValid) return res.status(HttpStatusCodes.UNAUTHORIZED).json({ message: 'incorrect password' });
+      const token: string = jwtHelpers.createToken({ userId: user.id, email: user.email, role: user.role });
 
-        const token: string = jwtHelpers.createToken({ userId: user.id, email: user.email, role: user.role });
+      await pgService.update('users', { id: user.id }, { last_logged_in_at: new Date(), updated_at: new Date() });
 
-        await pool.query('UPDATE users SET last_logged_in_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = $1', [user.id]);
-
-        return res.status(HttpStatusCodes.OK).json({ message: 'success', data: { token } });
-      }
+      return res.status(HttpStatusCodes.OK).json({ message: 'success', data: { token } });
     } catch (error) {
       next(error);
     }
