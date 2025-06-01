@@ -1,4 +1,4 @@
-import { IFiletypeWithMimetype, IStatusCode } from '@interfaces/helpers/misc.interface';
+import { IFiletypeWithMimetype, IPGErrorCode, IStatusCode } from '@interfaces/helpers/misc.interface';
 
 /**
  * @description http status codes to be used in API response
@@ -64,4 +64,23 @@ export const mimeTypes: IFiletypeWithMimetype = {
   PPT: 'application/vnd.ms-powerpoint',
   PPTX: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   VIDEO_MP4: 'video/mp4',
+};
+
+export const pgErrorCodes: IPGErrorCode = {
+  UNIQUE_VIOLATION: '23505',
+  FOREIGN_KEY_VIOLATION: '23503',
+  NOT_NULL_VIOLATION: '23502',
+  CHECK_VIOLATION: '23514',
+  INVALID_TEXT_REPRESENTATION: '22P02',
+  SYNTAX_ERROR: '42601',
+  UNDEFINED_TABLE: '42P01',
+  UNDEFINED_COLUMN: '42703',
+  DUPLICATE_COLUMN: '42701',
+  DUPLICATE_TABLE: '42P07',
+  STRING_DATA_RIGHT_TRUNCATION: '22001',
+  CONNECTION_DOES_NOT_EXIST: '08003',
+  DEADLOCK_DETECTED: '40P01',
+  INSUFFICIENT_PRIVILEGE: '42501',
+  INVALID_AUTHORIZATION_SPEC: '28000',
+  INVALID_PASSWORD: '28P01',
 };
