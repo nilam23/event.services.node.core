@@ -11,5 +11,6 @@ export * from '@services/aws/ses.service';
 export * from '@services/aws/s3.service';
 export * from '@services/axios/api.service';
 export * from '@services/db/mongoose.service';
+export * from '@services/db/pg.service';
 export * from '@utils/constants';
 export * from '@utils/helpers';
