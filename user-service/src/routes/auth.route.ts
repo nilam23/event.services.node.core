@@ -13,5 +13,6 @@ export class AuthRoutes implements IExpressRoute {
 
   private initializeRoutes() {
     this.router.post(`${this.path}/signup`, this.authController.signup);
+    this.router.post(`${this.path}/signin`, this.authController.signin);
   }
 }
