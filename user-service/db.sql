@@ -1,0 +1,12 @@
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone BIGINT,
+  password TEXT,
+  role VARCHAR(10) DEFAULT 'user' CHECK (role IN ('admin', 'user')),
+  otp_enabled BOOLEAN DEFAULT FALSE,
+  last_logged_in_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
